@@ -1,0 +1,38 @@
+services:
+    mysql:
+        image: docker.io/library/mysql:8.4
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: handshake
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: secret
+            MYSQL_ROOT_PASSWORD: rootsecret
+        ports:
+            - "127.0.0.1:3306:3306"
+        volumes:
+            - handshake-mysqldata:/var/lib/mysql
+
+    asterisk:
+        image: docker.io/andrius/asterisk:latest
+        container_name: asterisk
+        restart: always
+        network_mode: host
+        environment:
+            - TZ=UTC
+        volumes:
+            - asterisk-config:/etc/asterisk:z
+            - asterisk-logs:/var/log/asterisk:z
+
+    redis:
+        image: docker.io/library/redis:8-alpine
+        restart: unless-stopped
+        ports:
+            - "127.0.0.1:6379:6379"
+        volumes:
+            - handshake-redisdata:/data
+
+volumes:
+    handshake-mysqldata:
+    handshake-redisdata:
+    asterisk-config:
+    asterisk-logs:
